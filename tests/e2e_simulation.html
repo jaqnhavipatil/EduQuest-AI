@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EduQuest AI - Upgraded E2E Adventure World Simulation Test</title>
+</head>
+<body>
+  <div id="test-output">Running upgraded adventure simulation...</div>
+
+  <div id="mock-mirror-root" style="display:none;"></div>
+
+  <script src="../js/data/questionBank.js"></script>
+  <script src="../js/data/badges.js"></script>
+  <script src="../js/audio.js"></script>
+  <script src="../js/state.js"></script>
+  <script src="../js/aiBuddy.js"></script>
+  <script src="../js/mistakeMission.js"></script>
+  <script src="../js/quizEngine.js"></script>
+  <script src="../js/learningMirror.js"></script>
+
+  <script>
+    const logs = [];
+    function assert(cond, name) {
+      if (cond) {
+        logs.push(`[PASS] ${name}`);
+      } else {
+        logs.push(`[FAIL] ${name}`);
+      }
+    }
+
+    try {
+      // Clear state for fresh test
+      window.eduQuestState.resetAllData();
+      window.soundEffects.muted = true;
+
+      // 1. Set Grade 5 Mathematics
+      window.eduQuestState.setGrade(5);
+      window.eduQuestState.setSubject("math");
+      assert(window.eduQuestState.get().grade === 5, "Step 1: Selected Grade 5");
+
+      // 2. Fetch Topic with World Metadata
+      const topic = window.EduQuestData.GRADE_TOPICS[5].subjects.math[0];
+      assert(topic.id === "g5_math_fractions", "Step 2: Loaded topic 'Fractions & Decimals Explorer'");
+      assert(topic.worldObject === "Bridge of Common Denominators", "Step 2b: Verified World Object 'Bridge of Common Denominators'");
+
+      // Check initial personalized recommendation (unexplored)
+      const initialRecom = window.mistakeMissionEngine.getPersonalizedRecommendation(topic, "math", 5);
+      assert(initialRecom.type === "explore", "Step 2c: Initial recommendation is 'explore'");
+
+      // 3. Start Standard Quest (5 questions)
+      window.quizEngine.startQuest(topic, "math", 5);
+
+      // Q1: Correct
+      const q1Res = window.quizEngine.submitAnswer(1);
+      assert(q1Res.isCorrect === true && q1Res.earnedXP === 10, "Q1 answered correctly: +10 XP awarded");
+      window.quizEngine.nextQuestion();
+
+      // Q2: Incorrect - Trigger Mistake Detective!
+      const q2Res = window.quizEngine.submitAnswer(0);
+      assert(q2Res.isCorrect === false, "Q2 answered incorrectly");
+      assert(q2Res.detectiveCase !== null, "QuestBot Mistake Detective Case File generated on mistake!");
+      assert(q2Res.detectiveCase.misconception.length > 10, "Detective Case includes misconception analysis");
+      assert(q2Res.detectiveCase.workedExample.includes("1/2"), "Detective Case includes mini worked example");
+      window.quizEngine.nextQuestion();
+
+      // Q3: Incorrect
+      window.quizEngine.submitAnswer(0);
+      window.quizEngine.nextQuestion();
+
+      // Q4: Incorrect
+      window.quizEngine.submitAnswer(1);
+      window.quizEngine.nextQuestion();
+
+      // Q5: Correct
+      window.quizEngine.submitAnswer(1);
+
+      // 4. Finish Quest & Verify World Impact
+      const questResults = window.quizEngine.getResults();
+      assert(questResults.score === 2 && questResults.accuracy === 40, "Quest finished with score 2/5 (40% accuracy)");
+      
+      const isFlagged = window.eduQuestState.isTopicFlagged(topic.id);
+      assert(isFlagged === true, "World element cracked: Topic flagged for repair (attempts=5 >= 3 and acc=40% < 60%)");
+
+      // Check personalized recommendation now recommends World Repair Quest!
+      const repairRecom = window.mistakeMissionEngine.getPersonalizedRecommendation(topic, "math", 5);
+      assert(repairRecom.type === "repair", "Personalized Next Mission recommends 'World Repair Quest 🛠️'");
+      assert(repairRecom.reason.includes("Bridge of Common Denominators"), "Recommendation reason explains world element damage");
+
+      // 5. Launch Mistake-to-Mission World Repair
+      const revisionPayload = window.mistakeMissionEngine.prepareRevisionMission(topic.id, 5, "math");
+      assert(revisionPayload !== null, "Prepared World Repair payload");
+      assert(revisionPayload.worldObject === "Bridge of Common Denominators", "Payload identifies Bridge to repair");
+
+      window.quizEngine.startRevision(revisionPayload);
+
+      // Answer 3 repair questions correctly
+      window.quizEngine.submitAnswer(1); // Rev Q1
+      window.quizEngine.nextQuestion();
+      window.quizEngine.submitAnswer(1); // Rev Q2
+      window.quizEngine.nextQuestion();
+      window.quizEngine.submitAnswer(2); // Rev Q3
+
+      // 6. Complete Revision and Evaluate World Restoration
+      const revResults = window.quizEngine.getResults();
+      assert(revResults.accuracy === 100, "World Repair mission completed with 100% accuracy (3/3)");
+      assert(revResults.wasRepaired === true, "wasRepaired flag is TRUE!");
+      assert(revResults.revisionRecord.boost === 60, "Revision accuracy boost is +60%!");
+
+      const isRepairedInState = window.eduQuestState.isWorldRepaired(topic.id);
+      assert(isRepairedInState === true, "State registers world element as REPAIRED & RESTORED!");
+
+      // Check next recommendation after repair: shifts to Reinforcement or Mastery!
+      const postRepairRecom = window.mistakeMissionEngine.getPersonalizedRecommendation(topic, "math", 5);
+      assert(postRepairRecom.type === "reinforce" || postRepairRecom.type === "mastery", "Personalized mission upgraded post-repair!");
+
+      // 7. Verify Non-Destructive Judge Demo Mode
+      // Save realistic profile before demo
+      const preDemoXP = window.eduQuestState.get().xp;
+
+      // Start Judge Demo
+      window.eduQuestState.startJudgeDemoSession();
+      assert(window.eduQuestState.isJudgeDemo === true, "Judge Demo Mode active");
+      assert(window.eduQuestState.get().topicStats["g5_math_fractions"].flaggedForRevision === true, "Judge demo loads struggling fractions state with broken bridge");
+
+      // Exit Judge Demo
+      window.eduQuestState.exitJudgeDemoSession();
+      assert(window.eduQuestState.isJudgeDemo === false, "Judge Demo Mode successfully exited");
+      assert(window.eduQuestState.get().xp === preDemoXP, "Real learner XP perfectly restored without data corruption!");
+
+      logs.push("=== ALL UPGRADED E2E ADVENTURE SIMULATION TESTS COMPLETED SUCCESSFULLY ===");
+    } catch (err) {
+      logs.push(`[ERROR] Exception occurred: ${err.message}\n${err.stack}`);
+    }
+
+    document.getElementById("test-output").innerText = logs.join("\n");
+  </script>
+</body>
+</html>

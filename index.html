@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest AI — Turn Every Mistake Into A New Mission</title>
+  <meta name="description" content="A distinctive interactive learning adventure game for school students Grade 1 to 10. Your mistakes don't end the game — they change the world and open a new mission.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-box" id="btn-brand-home" title="Go to Learning Adventure">
+        <div class="brand-logo-icon">🚀</div>
+        <div class="brand-text-col">
+          <span class="brand-title">EduQuest AI</span>
+          <span class="brand-tagline">Turn every mistake into a new mission</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" aria-label="Main Navigation">
+        <button class="nav-tab-btn active" id="tab-adventure" data-screen="screen-adventure">
+          <span>🗺️</span> Adventure World
+        </button>
+        <button class="nav-tab-btn" id="tab-mirror" data-screen="screen-mirror">
+          <span>🪞</span> Learning Mirror
+        </button>
+        <button class="nav-tab-btn" id="tab-ai-buddy" data-screen="modal-ai-buddy">
+          <span>🕵️‍♂️</span> Mistake Detective
+        </button>
+      </nav>
+
+      <div class="header-stats">
+        <!-- Quick Judge Demo Button -->
+        <button class="btn btn-warning btn-sm" id="btn-quick-judge-demo" title="Try a fast 60s sample loop for judges (safe, won't alter real progress)">
+          ⚡ Try Sample Journey
+        </button>
+
+        <button class="stat-pill stat-pill-grade" id="btn-select-grade" title="Change Grade Level">
+          <span id="header-grade-label">Grade 3</span> ▾
+        </button>
+
+        <div class="stat-pill stat-pill-xp" title="Experience Points">
+          <span>⚡</span> <span id="header-xp">0 XP</span>
+        </div>
+
+        <div class="stat-pill stat-pill-stars" title="Stars Collected">
+          <span>⭐</span> <span id="header-stars">0</span>
+        </div>
+
+        <button class="icon-button" id="btn-sound-toggle" title="Toggle Sound (Mute/Unmute)" aria-label="Toggle Sound">
+          🔊
+        </button>
+
+        <button class="icon-button" id="btn-settings-open" title="Settings" aria-label="Settings">
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Judge Sandbox Banner (Shown only when in demo mode) -->
+  <div class="judge-demo-bar" id="judge-demo-banner" style="display: none;">
+    <div class="judge-demo-content">
+      <span>🧑‍⚖️ <strong>JUDGE DEMO MODE ACTIVE (SANDBOX):</strong> Experiencing the complete cycle with sample data. Real learner profile is safe.</span>
+      <button class="btn btn-sm btn-outline" id="btn-exit-judge-demo" style="background:#FFF; color:#B45309; border-color:#F59E0B;">
+        Exit Demo & Restore Profile ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="app-main">
+
+    <!-- 1. GRADE SELECTOR SCREEN -->
+    <section class="screen-view" id="screen-grade">
+      <div class="grade-selector-container">
+        <h1 class="page-title">Choose Your Learning Grade</h1>
+        <p class="page-subtitle">Select your school grade to explore tailored realm worlds, quests, and detective explanations.</p>
+        
+        <div class="grade-grid" id="grade-cards-grid">
+          <!-- Populated by JS for Grades 1 to 10 -->
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="btn-confirm-grade">
+          Enter Adventure World 🚀
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. LIVING ADVENTURE MAP SCREEN -->
+    <section class="screen-view active" id="screen-adventure">
+      
+      <!-- "Repair the World" Visual Journey Tracker -->
+      <div class="world-journey-wrapper">
+        <div class="world-journey-header">
+          <span class="journey-tag">CORE JOURNEY</span>
+          <span class="journey-caption">"Your mistakes don't end the game — they change the world and open a new mission."</span>
+        </div>
+        <div class="world-journey-track" id="world-journey-progress-bar">
+          <div class="journey-step-node" data-step="mistake">
+            <span class="step-icon">💥</span>
+            <span class="step-label">1. Mistake</span>
+          </div>
+          <div class="journey-connector"></div>
+          <div class="journey-step-node active" data-step="discover">
+            <span class="step-icon">🔍</span>
+            <span class="step-label">2. Discover</span>
+          </div>
+          <div class="journey-connector"></div>
+          <div class="journey-step-node" data-step="learn">
+            <span class="step-icon">💡</span>
+            <span class="step-label">3. Learn</span>
+          </div>
+          <div class="journey-connector"></div>
+          <div class="journey-step-node" data-step="repair">
+            <span class="step-icon">🛠️</span>
+            <span class="step-label">4. Repair</span>
+          </div>
+          <div class="journey-connector"></div>
+          <div class="journey-step-node" data-step="grow">
+            <span class="step-icon">🚀</span>
+            <span class="step-label">5. Grow</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="adventure-header">
+        <div>
+          <h2 class="page-title" id="adventure-grade-title">Grade 3 Living Adventure World</h2>
+          <p class="text-muted" id="adventure-realm-subtitle">The Realm of Number Crystals: Master quests and repair broken world conduits!</p>
+        </div>
+
+        <div class="subject-tabs" id="subject-tabs-container">
+          <button class="subject-btn active" data-subject="math">
+            <span>📐</span> Mathematics
+          </button>
+          <button class="subject-btn" data-subject="english">
+            <span>📚</span> English
+          </button>
+          <button class="subject-btn" data-subject="science">
+            <span>🧪</span> Science
+          </button>
+        </div>
+      </div>
+
+      <!-- Mistake-to-Mission Alert Banner (Shown dynamically when world elements are broken) -->
+      <div class="mistake-banner" id="adventure-mistake-banner" style="display: none;">
+        <div class="mistake-banner-content">
+          <div class="mistake-banner-icon">⚠️</div>
+          <div>
+            <div class="mistake-banner-title">World Element Damaged! Repair Needed</div>
+            <div class="mistake-banner-desc" id="mistake-banner-text">
+              Accuracy dropped below 60%. A bridge or beacon has collapsed! Launch the 3-question World Repair Mission to rebuild it.
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-warning" id="btn-banner-launch-revision">
+          🛠️ Launch World Repair ➔
+        </button>
+      </div>
+
+      <!-- Living World Map Canvas (SVG Island Realm) -->
+      <div class="living-world-canvas" id="living-world-canvas">
+        <div class="world-canvas-sky">
+          <div class="cloud cloud-1">☁️</div>
+          <div class="cloud cloud-2">☁️</div>
+          <div class="floating-orb orb-1">✨</div>
+          <div class="floating-orb orb-2">🌟</div>
+        </div>
+
+        <!-- Dynamic SVG Connected Energy Conduits / Bridges -->
+        <svg class="world-conduit-svg" id="world-conduit-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="healthyConduitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.8"/>
+              <stop offset="50%" stop-color="#06B6D4" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#10B981" stop-opacity="0.8"/>
+            </linearGradient>
+            <linearGradient id="brokenConduitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#EF4444" stop-opacity="0.9"/>
+              <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#EF4444" stop-opacity="0.9"/>
+            </linearGradient>
+          </defs>
+          <g id="conduit-paths-group">
+            <!-- Dynamic paths generated in JS -->
+          </g>
+        </svg>
+
+        <!-- Interactive Floating Island Nodes Container -->
+        <div class="island-nodes-container" id="island-nodes-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Realm Inspection & Next Personalized Mission Panel -->
+      <div class="realm-inspect-panel" id="realm-inspect-panel">
+        <!-- Rendered dynamically for selected island -->
+      </div>
+
+    </section>
+
+    <!-- 3. MISTAKE-TO-MISSION CONCEPT PREP SCREEN (WORLD REPAIR BRIEFING) -->
+    <section class="screen-view" id="screen-concept-prep">
+      <div class="concept-prep-card">
+        <div class="prep-mascot-box">🕵️‍♂️💡</div>
+        <h2 class="prep-title" id="prep-modal-header">World Repair Mission Briefing</h2>
+        <div class="prep-topic-name" id="prep-topic-name">Topic Name</div>
+        <div class="prep-world-object-badge" id="prep-world-object">Crystal Bridge</div>
+
+        <div class="concept-summary-box">
+          <div class="concept-summary-heading">🔍 Detective QuestBot's Diagnostic Analysis</div>
+          <p id="prep-concept-text">Concept explanation...</p>
+        </div>
+
+        <div class="prep-repair-steps">
+          <div class="prep-step-pill">1. Understand the Rule</div>
+          <span class="prep-arrow">➔</span>
+          <div class="prep-step-pill">2. Solve 3 Repair Questions</div>
+          <span class="prep-arrow">➔</span>
+          <div class="prep-step-pill">3. Rebuild the World!</div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 24px;">
+          <button class="btn btn-outline" id="btn-cancel-revision">
+            Back to World Map
+          </button>
+          <button class="btn btn-warning btn-lg" id="btn-start-revision-quiz">
+            🛠️ Rebuild Realm (Start 3 Questions)!
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. QUIZ ARENA SCREEN -->
+    <section class="screen-view" id="screen-quiz">
+      <div class="quiz-arena-container">
+        
+        <!-- Top status bar -->
+        <div class="quiz-top-bar">
+          <span class="quiz-mode-pill mode-standard" id="quiz-mode-pill">Quest Mode</span>
+          
+          <div class="quiz-progress-wrapper">
+            <div class="quiz-progress-fill" id="quiz-progress-bar"></div>
+          </div>
+          
+          <span class="text-sm font-bold" id="quiz-question-counter">Question 1 of 5</span>
+          
+          <div class="quiz-streak-badge" id="quiz-streak-badge" title="Consecutive correct answers">
+            🔥 <span id="quiz-streak-count">0</span>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+          <span class="question-concept-tag" id="quiz-concept-tag">Concept Tag</span>
+          
+          <h3 class="question-text" id="quiz-question-text">
+            Question text will appear here...
+          </h3>
+
+          <!-- AI Buddy Hint Bar -->
+          <div class="ai-hint-bar" id="ai-hint-bar">
+            <div class="ai-hint-text" id="ai-hint-display">
+              🕵️‍♂️ Detective Clue: Click for QuestBot's secret pattern clue!
+            </div>
+            <button class="btn-hint" id="btn-request-hint">
+              💡 Request Clue
+            </button>
+          </div>
+
+          <!-- Options Grid -->
+          <div class="options-grid" id="quiz-options-container">
+            <!-- 4 options generated here -->
+          </div>
+        </div>
+
+        <!-- Feedback & Mistake Detective Drawer -->
+        <div class="feedback-box" id="quiz-feedback-box">
+          <div class="feedback-header">
+            <div class="feedback-title" id="feedback-title">
+              <span>🎉 Correct!</span>
+            </div>
+            <span class="badge-pill bg-green" id="feedback-xp-pill">+10 XP</span>
+          </div>
+
+          <p class="feedback-explanation" id="feedback-explanation-text">
+            Explanation of why this answer is correct...
+          </p>
+
+          <!-- Detective Case File Box (Shown especially on mistakes!) -->
+          <div class="detective-case-box" id="detective-case-box" style="display: none;">
+            <div class="detective-case-header">
+              <span class="detective-avatar">🕵️‍♂️</span>
+              <div>
+                <strong>QuestBot Mistake Detective: Case File</strong>
+                <span class="badge-pill bg-boost text-sm" id="detective-source-badge">Rule-Based Analysis</span>
+              </div>
+            </div>
+            <div class="detective-misconception" id="detective-misconception-text">
+              Common trap analysis...
+            </div>
+            <div class="detective-worked-example" id="detective-worked-example-box">
+              <div class="worked-example-title">💡 Mini Worked Example:</div>
+              <pre id="detective-worked-example-text">Step 1: ...</pre>
+            </div>
+          </div>
+
+          <div class="feedback-buddy-note" id="feedback-buddy-note">
+            🤖 <strong>QuestBot Advice:</strong> Keep up the great focus!
+          </div>
+
+          <div class="feedback-actions">
+            <button class="btn btn-primary" id="btn-next-question">
+              Next Question ➔
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. RESULTS SCREEN -->
+    <section class="screen-view" id="screen-results">
+      <div class="results-container">
+        
+        <!-- Animated World Repair Celebration Card (If revision passed) -->
+        <div class="world-repaired-hero" id="world-repair-celebration-card" style="display: none;">
+          <div class="repair-glow-ring">✨ 🛠️ ✨</div>
+          <h2 class="repair-hero-title">WORLD ELEMENT RESTORED!</h2>
+          <p class="repair-hero-desc" id="repair-hero-desc">
+            The bridge has been rebuilt and energy flows once again!
+          </p>
+          <div class="repair-sparks-banner">🌟 +40 Bonus XP & Comeback Badges Unlocked! 🌟</div>
+        </div>
+
+        <div class="results-hero-card">
+          <div class="results-celebration-icon" id="results-icon">🏆</div>
+          <h2 class="results-title" id="results-title">Quest Complete!</h2>
+          <div class="results-stars-display" id="results-stars">⭐⭐⭐</div>
+
+          <!-- Before vs After Comparison Card (for Revision Missions) -->
+          <div class="comparison-card" id="results-comparison-card" style="display: none;">
+            <div class="comparison-stat-col">
+              <span class="text-sm font-bold text-muted">BEFORE REVISION</span>
+              <span class="comparison-val text-coral" id="comp-before-val">40%</span>
+            </div>
+            <div class="comparison-arrow">➔</div>
+            <div class="comparison-stat-col">
+              <span class="text-sm font-bold text-muted">AFTER REVISION</span>
+              <span class="comparison-val text-emerald" id="comp-after-val">100%</span>
+            </div>
+            <div class="comparison-stat-col">
+              <span class="text-sm font-bold text-muted">IMPROVEMENT BOOST</span>
+              <span class="badge-pill bg-boost font-bold" id="comp-boost-val">+60% 🚀</span>
+            </div>
+          </div>
+
+          <!-- Standard Stats Row -->
+          <div class="results-stats-row">
+            <div class="result-stat-box">
+              <div class="result-stat-value" id="results-score">5 / 5</div>
+              <div class="result-stat-label">Score</div>
+            </div>
+            <div class="result-stat-box">
+              <div class="result-stat-value" id="results-accuracy">100%</div>
+              <div class="result-stat-label">Accuracy</div>
+            </div>
+            <div class="result-stat-box">
+              <div class="result-stat-value text-emerald" id="results-xp">+50 XP</div>
+              <div class="result-stat-label">XP Earned</div>
+            </div>
+          </div>
+
+          <!-- Next Mission Recommendation Callout -->
+          <div class="next-mission-card" id="results-next-mission-card">
+            <div class="next-mission-header">
+              <span id="results-next-icon">🎯</span>
+              <strong>Personalized Next Mission:</strong>
+              <span class="badge-pill" id="results-next-badge">Repair Quest</span>
+            </div>
+            <p class="text-sm" id="results-next-reason">Recommended based on your accuracy.</p>
+          </div>
+
+          <!-- Mistake-to-Mission Call to action if mistakes were made -->
+          <div class="revision-trigger-box" id="results-revision-prompt" style="display: none; margin-bottom: 24px;">
+            <p class="revision-warning-text" id="results-revision-prompt-text">
+              🎯 Your accuracy dropped below 60%. A world element has collapsed! Turn this mistake into a revision mission now.
+            </p>
+            <button class="btn btn-warning" id="btn-results-launch-revision">
+              🛠️ Rebuild World Element (Start Revision)
+            </button>
+          </div>
+
+          <div class="results-actions-row">
+            <button class="btn btn-outline" id="btn-results-mirror">
+              🪞 View Learning Mirror
+            </button>
+            <button class="btn btn-primary" id="btn-results-continue">
+              🗺️ Return to Adventure World
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Review Accordion -->
+        <div class="review-section">
+          <h3 class="review-title">📋 Question-by-Question Review</h3>
+          <div id="results-review-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. MY LEARNING MIRROR SCREEN -->
+    <section class="screen-view" id="screen-mirror">
+      <div id="learning-mirror-root">
+        <!-- Rendered completely by LearningMirror.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- AI BUDDY & MISTAKE DETECTIVE MODAL -->
+  <div class="modal-overlay" id="modal-ai-buddy">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">🕵️‍♂️ QuestBot Mistake Detective</h3>
+        <button class="modal-close-btn" data-close-modal="modal-ai-buddy">&times;</button>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 48px; margin-bottom: 8px;">🕵️‍♂️🔍</div>
+        <span class="badge-pill bg-green" id="ai-mode-status-badge">Curated Detective Engine (Rule-Based)</span>
+        <p class="text-muted text-sm" style="margin-top: 8px;">
+          QuestBot analyzes misconceptions, points out common cognitive traps, provides mini worked examples, and guides world repairs.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Grade Adaptation:</label>
+        <p class="text-sm text-muted" id="ai-tone-preview">
+          Adapting hints and detective breakdowns for <strong>Grade 3</strong> explorers!
+        </p>
+      </div>
+
+      <div class="form-group" style="background: #F8FAFC; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px;">
+        <label class="form-label">🔑 Optional Live Gemini API Key</label>
+        <p class="text-sm text-muted" style="margin-bottom: 8px;">
+          EduQuest runs 100% offline in Demo Mode with vetted curriculum insights. To connect live Gemini AI generation:
+        </p>
+        <input type="password" class="form-input" id="input-api-key" placeholder="AIzaSy...">
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-outline btn-sm" id="btn-save-api-key">Save Key</button>
+          <button class="btn btn-outline btn-sm" id="btn-clear-api-key">Clear Key (Return to Demo)</button>
+        </div>
+      </div>
+
+      <div style="text-align: right;">
+        <button class="btn btn-primary" data-close-modal="modal-ai-buddy">Understood!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ App Settings</h3>
+        <button class="modal-close-btn" data-close-modal="modal-settings">&times;</button>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <strong>🔊 Sound Effects</strong>
+          <p class="text-sm text-muted">Play chimes, streaks, and repair fanfares</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-settings-sound-toggle">Enabled</button>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <strong>📖 Dyslexia-Friendly Font</strong>
+          <p class="text-sm text-muted">High-legibility spaced typography</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-settings-font-toggle">Disabled</button>
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <strong class="text-coral">⚠️ Reset Data</strong>
+        <p class="text-sm text-muted" style="margin-bottom: 12px;">Clear all XP, streaks, topic stats, and badges from this browser.</p>
+        <button class="btn btn-outline btn-sm" id="btn-settings-reset" style="border-color: #F87171; color: #DC2626;">
+          Reset All Progress
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="js/data/questionBank.js"></script>
+  <script src="js/data/badges.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/aiBuddy.js"></script>
+  <script src="js/mistakeMission.js"></script>
+  <script src="js/quizEngine.js"></script>
+  <script src="js/learningMirror.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
